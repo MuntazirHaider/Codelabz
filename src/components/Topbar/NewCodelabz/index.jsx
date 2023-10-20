@@ -34,7 +34,11 @@ function NewCodelabz({ setVisibleModal }) {
 
   return (
     <React.Fragment>
+<<<<<<< HEAD
       <Paper className={classes.root}>
+=======
+      <Paper className={classes.root} data-testId="homepageNewCodelabz">
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
         <Grid
           spacing={0}
           justifyContent="flex-start"
@@ -46,6 +50,10 @@ function NewCodelabz({ setVisibleModal }) {
             className={classes.iconDiv}
             justifyContent="center"
             alignContent="center"
+<<<<<<< HEAD
+=======
+            data-testId="NewCodelabzBtn"
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
             onClick={() => setVisibleModal(true)}
           >
             <AddBoxRoundedIcon color="primary" fontSize="large" />

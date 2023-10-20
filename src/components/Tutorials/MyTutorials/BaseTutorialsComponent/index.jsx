@@ -32,11 +32,11 @@ const BaseTutorialsComponent = ({ owner = "", ownerName = "", users = [] }) => {
     const index = [...user, ...org];
 
     const index_array = index.filter(e => e.owner === owner);
-
+    console.log(index, index_array);
     return (
       <div>
         <Grid container item>
-          {index_array.map((tutorial, index) => (
+          {index_array[0]?.tutorials?.map((tutorial, index) => (
             <Grid
               xs={12}
               sm={6}
@@ -53,7 +53,16 @@ const BaseTutorialsComponent = ({ owner = "", ownerName = "", users = [] }) => {
             </Grid>
           ))}
           {index_array.length === 0 && (
-            <EmptyTutorials org={ownerName} orgHandle={owner} />
+            <Grid
+              xs={12}
+              sm={6}
+              md={3}
+              lg={2}
+              xl={2}
+              className="mb-8 mr-8 mt-8 ml-8"
+            >
+              <EmptyTutorials org={ownerName} orgHandle={owner} />
+            </Grid>
           )}
         </Grid>
       </div>

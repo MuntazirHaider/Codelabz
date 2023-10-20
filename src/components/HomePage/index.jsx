@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import CardComponent from "../CodelabCard/index";
 import Typography from "@mui/material/Typography";
@@ -31,9 +31,18 @@ import CardWithoutPicture from "../Card/CardWithoutPicture";
 import Activity from "../Topbar/Activity";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
 import NewTutorial from "../Tutorials/NewTutorial";
+import { useDispatch, useSelector } from "react-redux";
+import { useFirebase, useFirestore } from "react-redux-firebase";
+import {
+  getTutorialFeedData,
+  getTutorialFeedIdArray
+} from "../../store/actions/tutorialPageActions";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const firebase = useFirebase();
+  const firestore = useFirestore();
   const [value, setValue] = useState(2);
   const [selectedTab, setSelectedTab] = useState("1");
   const [visibleModal, setVisibleModal] = useState(false);
@@ -155,6 +164,26 @@ function HomePage({ background = "white", textColor = "black" }) {
     }
   ]);
 
+  const profileData = useSelector(({ firebase: { profile } }) => profile);
+  useEffect(() => {
+    const getFeed = async () => {
+      const tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
+        firebase,
+        firestore,
+        dispatch
+      );
+      getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
+    };
+    getFeed();
+  }, []);
+  const tutorials = useSelector(
+    ({
+      tutorialPage: {
+        feed: { homepageFeedArray }
+      }
+    }) => homepageFeedArray
+  );
+
   const notification = () => {};
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -171,8 +200,8 @@ function HomePage({ background = "white", textColor = "black" }) {
       style={{ background: background }}
       data-testId="homepage"
     >
-      <Grid className={classes.contentPart}>
-        <div className={classes.sideBody}>
+      <Grid container justifyContent="center" className={classes.contentPart}>
+        <Grid item xs={2} className={classes.sideBody}>
           {windowSize.width > 750 && (
             <Grid
               item
@@ -192,12 +221,12 @@ function HomePage({ background = "white", textColor = "black" }) {
               </Grid>
             </Grid>
           )}
-        </div>
+        </Grid>
         <Grid
           item
           className={classes.mainBody}
           data-testId="homepageMainBody"
-          xs={10}
+          xs={6}
         >
           <NewCodelabz setVisibleModal={setVisibleModal} />
           <NewTutorial
@@ -210,11 +239,11 @@ function HomePage({ background = "white", textColor = "black" }) {
           <Box item sx={{ display: { md: "none" } }}>
             <TagCard tags={tags} />
           </Box>
-          {userList.persons.map(person => {
-            return person.Heading == "CardWithoutPicture" ? (
-              <CardWithoutPicture {...person} />
+          {tutorials.map(tutorial => {
+            return !tutorial?.featured_image ? (
+              <CardWithoutPicture tutorial={tutorial} />
             ) : (
-              <CardWithPicture {...person} />
+              <CardWithPicture tutorial={tutorial} />
             );
           })}
           <Box
@@ -274,7 +303,7 @@ function HomePage({ background = "white", textColor = "black" }) {
           </Box>
         </Grid>
 
-        <Grid item className={classes.sideBody}>
+        <Grid item className={classes.sideBody} xs={3}>
           <Grid
             item
             container

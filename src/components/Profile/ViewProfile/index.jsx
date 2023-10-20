@@ -33,6 +33,7 @@ const ProfileView = () => {
   const [followers, setFollowers] = useState([]);
   const [targetUserFollowing, setTargetUserFollowing] = useState(0);
   const [following, setFollowing] = useState([]);
+  const [followDisable, setFollowDisable] = useState(false);
   const db = firebase.firestore();
 
   useEffect(() => {
@@ -107,29 +108,30 @@ const ProfileView = () => {
     );
   }
 
-  const addFollower = e => {
+  const addFollower = async e => {
     e.preventDefault();
-    addUserFollower(
+	setFollowDisable(true);
+    await addUserFollower(
       currentProfileData,
-      followers,
-      following,
       profileData,
       firestore,
       dispatch
     );
+	setFollowDisable(false);
   };
 
-  const removeFollower = e => {
+  const removeFollower = async e => {
     e.preventDefault();
-    removeUserFollower(
-      followers,
+	setFollowDisable(true);
+    await removeUserFollower(
       currentProfileData,
-      following,
       profileData,
       firestore,
       dispatch
     );
+	setFollowDisable(false);
   };
+
   return (
     <ThemeProvider theme={basicTheme}>
       <Card className="p-0">
@@ -178,7 +180,7 @@ const ProfileView = () => {
                         <div
                           style={{
                             display: "flex",
-                            gap: "10px"
+                            gap: "10px",
                           }}
                         >
                           <Box mr={1}>
@@ -323,22 +325,19 @@ const ProfileView = () => {
                     variant="body2"
                     style={{ margin: ".5rem 0 .5rem 0" }}
                   >
-                    Followers : <span>{followers ? followers.length : 0}</span>{" "}
+                    Followers : <span>{profileData.followerCount ? profileData.followerCount : 0}</span>{" "}
                     Following :{" "}
                     <span>
-                      {targetUserFollowing ? targetUserFollowing.length : 0}
+                      {profileData.followingCount ? profileData.followingCount : 0}
                     </span>
                   </Typography>
-                  {!following ? (
+                  {!profileData.isFollowing ? (
                     <Button
                       variant="contained"
                       onClick={e => addFollower(e)}
                       style={{ marginTop: "1rem" }}
+					  disabled={followDisable}
                     >
-                      follow
-                    </Button>
-                  ) : !following.includes(profileData.handle) ? (
-                    <Button variant="contained" onClick={e => addFollower(e)}>
                       follow
                     </Button>
                   ) : (
@@ -346,6 +345,7 @@ const ProfileView = () => {
                       onClick={e => removeFollower(e)}
                       variant="contained"
                       style={{ marginTop: "1rem" }}
+                      disabled={followDisable}
                     >
                       unfollow
                     </Button>

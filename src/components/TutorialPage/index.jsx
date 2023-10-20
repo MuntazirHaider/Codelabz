@@ -9,15 +9,19 @@ import Grid from "@mui/material/Grid";
 import useStyles from "./styles";
 import StepsBar from "./StepBar";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
-import { getTutorialData } from "../../store/actions/tutorialPageActions";
+import {
+  getTutorialData,
+  getTutorialSteps
+} from "../../store/actions/tutorialPageActions";
 import { getUserProfileData } from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 function TutorialPage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
   const { id } = useParams();
+  const history = useHistory();
   const windowSize = useWindowSize();
   const [openMenu, setOpen] = useState(false);
   const toggleSlider = () => {
@@ -28,6 +32,8 @@ function TutorialPage({ background = "white", textColor = "black" }) {
   const firestore = useFirestore();
   useEffect(() => {
     getTutorialData(id)(firebase, firestore, dispatch);
+    getTutorialSteps(id)(firebase, firestore, dispatch);
+    return () => {};
   }, []);
   const tutorial = useSelector(
     ({
@@ -36,16 +42,35 @@ function TutorialPage({ background = "white", textColor = "black" }) {
       }
     }) => data
   );
+  const loading = useSelector(
+    ({
+      tutorialPage: {
+        post: { loading }
+      }
+    }) => loading
+  );
 
   const postDetails = {
-    title: tutorial?.tut_title,
-    org: tutorial?.org_handle,
-    user: tutorial?.user_handle,
+    title: tutorial?.title,
+    org: tutorial?.owner,
+    user: tutorial?.created_by,
     upVote: tutorial?.upVotes,
     downVote: tutorial?.downVotes,
-    published_on: tutorial?.published_on,
+    published_on: tutorial?.createdAt,
     tag: tutorial?.tut_tags
   };
+
+  const steps = useSelector(
+    ({
+      tutorialPage: {
+        post: { steps }
+      }
+    }) => steps
+  );
+  if ((!loading && !tutorial) || (!loading && !tutorial?.isPublished)) {
+    console.log(loading, tutorial);
+    history.push("/not-found");
+  }
 
   return (
     <Box
@@ -73,7 +98,7 @@ function TutorialPage({ background = "white", textColor = "black" }) {
                 <StepsBar
                   open={openMenu}
                   toggleSlider={toggleSlider}
-                  steps={tutorial.steps}
+                  steps={steps}
                 />
               </Grid>
             </Grid>
@@ -82,15 +107,20 @@ function TutorialPage({ background = "white", textColor = "black" }) {
         <Grid
           item
           className={classes.mainBody}
-          data-testId="homepageMainBody"
+          data-testId="tutorialpageMainBody"
           xs={6}
         >
           <PostDetails details={postDetails} />
-          <Tutorial steps={tutorial?.steps} />
-          <CommentBox />
+          <Tutorial steps={steps} />
+          <CommentBox commentsArray={tutorial?.comments} tutorialId={id} />
         </Grid>
 
-        <Grid item className={classes.sideBody} xs={3}>
+        <Grid
+          item
+          className={classes.sideBody}
+          xs={3}
+          data-testId="tutorialpageSideBar"
+        >
           <SideBar />
         </Grid>
       </Grid>

@@ -176,26 +176,34 @@ export const resendVerifyEmail = email => async dispatch => {
  * @param userHandle
  * @returns {function(...[*]=):boolean}
  */
+<<<<<<< HEAD
 export const checkUserHandleExists = userHandle => async firebase => {
+=======
+export const checkUserHandleExists = (userHandle) => async (firestore) => {
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
   try {
-    const handle = await firebase
-      .ref(`/cl_user_handle/${userHandle}`)
-      .once("value");
-    return handle.exists();
+    const handle = await firestore
+      .collection("cl_user")
+      .where("handle", "==", userHandle)
+      .get();
+    return handle.docs.length > 0;
   } catch (e) {
     throw e.message;
   }
 };
 
+<<<<<<< HEAD
 export const checkOrgHandleExists = orgHandle => async firebase => {
+=======
+export const checkOrgHandleExists = (orgHandle) => async (firestore) => {
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
   try {
-    const organizationHandle = await firebase
-      .firestore()
+    const organizationHandle = await firestore
       .collection("cl_org_general")
       .doc(orgHandle)
       .get();
 
-    console.log(organizationHandle);
+    // console.log(organizationHandle);
     return organizationHandle.exists;
   } catch (e) {
     throw e.message;
@@ -218,7 +226,7 @@ export const setUpInitialData =
         org_country
       } = data;
 
-      const isUserHandleExists = await checkUserHandleExists(handle)(firebase);
+      const isUserHandleExists = await checkUserHandleExists(handle)(firestore);
 
       if (isUserHandleExists) {
         dispatch({
@@ -248,6 +256,10 @@ export const setUpInitialData =
             org_handle,
             org_website,
             org_country,
+            followerCount: 0,
+            contributorsCount: 0,
+            feedCount: 0,
+            org_published: false,
             org_email: userData.email,
             org_created_date: firestore.FieldValue.serverTimestamp(),
             createdAt: firestore.FieldValue.serverTimestamp(),

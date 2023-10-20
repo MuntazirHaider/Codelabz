@@ -24,7 +24,7 @@ const RemoveStepModal = ({
     setVisible(viewModal);
   }, [viewModal]);
 
-  const handleOnOk = () => {
+  const handleOnOk = event => {
     <Snackbar
       anchorOrigin={{
         vertical: "bottom",
@@ -35,6 +35,7 @@ const RemoveStepModal = ({
       message="Updating...."
     />;
     if (step_length > 1) {
+      event.preventDefault();
       removeStep(
         owner,
         tutorial_id,
@@ -82,7 +83,7 @@ const RemoveStepModal = ({
           <Button key="back" onClick={handleOnCancel}>
             <Typography>Cancel</Typography>
           </Button>
-          <Button key="submit" type="primary" htmlType="submit">
+          <Button key="remove" type="submit">
             <Typography> Remove</Typography>
           </Button>
         </form>

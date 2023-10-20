@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Card, Box, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import HtmlTextRenderer from "../../Tutorials/subComps/HtmlTextRenderer";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -16,14 +17,13 @@ const Tutorial = ({ steps }) => {
       <Card className={classes.container}>
         {steps?.map((step, i) => {
           return (
-            <Box id={step.id} key={step.id}>
+            <Box id={step.id} key={step.id} data-testId="tutorialpageSteps">
               <Typography sx={{ fontWeight: "600" }}>
                 {i + 1 + ". " + step.title}
               </Typography>
-              <Typography
-                className="content"
-                dangerouslySetInnerHTML={{ __html: step.content }}
-              ></Typography>
+              <Typography className="content">
+                <HtmlTextRenderer html={step.content} />
+              </Typography>
             </Box>
           );
         })}

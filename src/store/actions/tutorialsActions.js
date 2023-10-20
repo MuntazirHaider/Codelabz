@@ -20,7 +20,7 @@ export const getUserTutorialsBasicData =
   user_handle => async (firestore, dispatch) => {
     try {
       dispatch({ type: actions.GET_USER_TUTORIALS_BASIC_START });
-      let index;
+      let index = [];
       const userTutorialsQuerySnapshot = await firestore
         .collection("tutorials")
         .where("editors", "array-contains", user_handle)
@@ -44,9 +44,14 @@ export const getUserTutorialsBasicData =
           return new_doc;
         });
       }
+
       dispatch({
         type: actions.GET_USER_TUTORIALS_BASIC_SUCCESS,
+<<<<<<< HEAD
         payload: index
+=======
+        payload: { owner: user_handle, tutorials: index }
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
       });
     } catch (e) {
       dispatch({
@@ -136,6 +141,10 @@ export const createTutorial =
           owner,
           summary,
           title,
+<<<<<<< HEAD
+=======
+          tutorial_id: documentID,
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
           featured_image: "",
           icon: "",
           url: "",
@@ -171,9 +180,15 @@ export const createTutorial =
     }
   };
 
+<<<<<<< HEAD
 const checkUserOrOrgHandle = handle => async firebase => {
   const userHandleExists = await checkUserHandleExists(handle)(firebase);
   const orgHandleExists = await checkOrgHandleExists(handle)(firebase);
+=======
+const checkUserOrOrgHandle = handle => async firestore => {
+  const userHandleExists = await checkUserHandleExists(handle)(firestore);
+  const orgHandleExists = await checkOrgHandleExists(handle)(firestore);
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
 
   if (userHandleExists && !orgHandleExists) {
     return "user";
@@ -347,7 +362,10 @@ export const removeStep =
   (owner, tutorial_id, step_id, current_step_no) =>
   async (firebase, firestore, dispatch) => {
     try {
+<<<<<<< HEAD
       const type = await checkUserOrOrgHandle(owner)(firebase);
+=======
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
       await firestore
         .collection("tutorials")
         .doc(tutorial_id)
@@ -389,7 +407,7 @@ export const uploadTutorialImages =
   (owner, tutorial_id, files) => async (firebase, firestore, dispatch) => {
     try {
       dispatch({ type: actions.TUTORIAL_IMAGE_UPLOAD_START });
-      const type = await checkUserOrOrgHandle(owner)(firebase);
+      const type = await checkUserOrOrgHandle(owner)(firestore);
 
       const storagePath = `tutorials/${type}/${owner}/${tutorial_id}`;
       const dbPath = `tutorials`;
@@ -431,7 +449,7 @@ export const remoteTutorialImages =
       dispatch({
         type: actions.TUTORIAL_IMAGE_DELETE_START
       });
-      const type = await checkUserOrOrgHandle(owner)(firebase);
+      const type = await checkUserOrOrgHandle(owner)(firestore);
 
       const storagePath = `tutorials/${type}/${owner}/${tutorial_id}/${name}`;
       const dbPath = `tutorials`;
@@ -468,6 +486,7 @@ export const updateStepTitle =
   (owner, tutorial_id, step_id, step_title) =>
   async (firebase, firestore, dispatch) => {
     try {
+<<<<<<< HEAD
       const type = await checkUserOrOrgHandle(owner)(firebase);
 
       const dbPath = `tutorials/${tutorial_id}/steps`;
@@ -480,13 +499,28 @@ export const updateStepTitle =
           updatedAt: firestore.FieldValue.serverTimestamp()
         });
 
+=======
+      const dbPath = `tutorials/${tutorial_id}/steps`;
+      await firestore
+        .collection(dbPath)
+        .doc(step_id)
+        .update({
+          [`title`]: step_title,
+          updatedAt: firestore.FieldValue.serverTimestamp()
+        });
+
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
       await getCurrentTutorialData(owner, tutorial_id)(
         firebase,
         firestore,
         dispatch
       );
     } catch (e) {
+<<<<<<< HEAD
       console.log(e.message);
+=======
+      console.log(e);
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
     }
   };
 
@@ -494,6 +528,7 @@ export const updateStepTime =
   (owner, tutorial_id, step_id, step_time) =>
   async (firebase, firestore, dispatch) => {
     try {
+<<<<<<< HEAD
       const type = await checkUserOrOrgHandle(owner)(firebase);
 
       const dbPath = `tutorials/${tutorial_id}/steps`;
@@ -506,6 +541,18 @@ export const updateStepTime =
           updatedAt: firestore.FieldValue.serverTimestamp()
         });
 
+=======
+      const dbPath = `tutorials/${tutorial_id}/steps`;
+
+      await firestore
+        .collection(dbPath)
+        .doc(step_id)
+        .update({
+          [`time`]: step_time,
+          updatedAt: firestore.FieldValue.serverTimestamp()
+        });
+
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
       await getCurrentTutorialData(owner, tutorial_id)(
         firebase,
         firestore,
@@ -520,6 +567,7 @@ export const setTutorialTheme =
   ({ tutorial_id, owner, bgColor, textColor }) =>
   async (firebase, firestore, dispatch) => {
     try {
+<<<<<<< HEAD
       const type = await checkUserOrOrgHandle(owner)(firebase);
 
       const dbPath = `tutorials`;
@@ -530,6 +578,16 @@ export const setTutorialTheme =
         updatedAt: firestore.FieldValue.serverTimestamp()
       });
 
+=======
+      const dbPath = `tutorials`;
+
+      await firestore.collection(dbPath).doc(tutorial_id).update({
+        text_color: textColor,
+        background_color: bgColor,
+        updatedAt: firestore.FieldValue.serverTimestamp()
+      });
+
+>>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
       await getCurrentTutorialData(owner, tutorial_id)(
         firebase,
         firestore,

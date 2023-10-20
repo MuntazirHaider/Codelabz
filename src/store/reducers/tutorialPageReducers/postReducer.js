@@ -1,9 +1,10 @@
 import * as actions from "../../actions/actionTypes";
 
 const initialState = {
-  loading: false,
+  loading: true,
   error: null,
-  data: null
+  data: null,
+  steps: []
 };
 
 const PostReducer = (state = initialState, { type, payload }) => {
@@ -26,6 +27,27 @@ const PostReducer = (state = initialState, { type, payload }) => {
       };
 
     case actions.GET_POST_DATA_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: payload
+      };
+
+    case actions.GET_STEPS_DATA_START:
+      return {
+        ...state,
+        loading: true
+      };
+
+    case actions.GET_STEPS_DATA_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: false,
+        steps: payload
+      };
+
+    case actions.GET_STEPS_DATA_FAIL:
       return {
         ...state,
         loading: false,
