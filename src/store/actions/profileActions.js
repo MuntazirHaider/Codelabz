@@ -24,21 +24,13 @@ export const setCurrentOrgUserPermissions =
     }
   };
 
-<<<<<<< HEAD
-export const getProfileData = organizations => async (firebase, dispatch) => {
-=======
 export const getProfileData = () => async (firebase, firestore, dispatch) => {
->>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
   try {
     dispatch({ type: actions.GET_PROFILE_DATA_START });
     const userOrgs = await getAllOrgsOfCurrentUser()(firebase, firestore, dispatch);
     const organizations = userOrgs?.map(org => org.org_handle);
     // console.log(organizations);
     if (organizations && organizations.length > 0) {
-<<<<<<< HEAD
-      dispatch({ type: actions.GET_PROFILE_DATA_START });
-=======
->>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
       const promises = organizations.map(org_handle =>
         getOrgBasicData(org_handle)(firebase)
       );
@@ -49,11 +41,7 @@ export const getProfileData = () => async (firebase, firestore, dispatch) => {
       )(dispatch);
       dispatch({
         type: actions.GET_PROFILE_DATA_SUCCESS,
-<<<<<<< HEAD
-        payload: { organizations: _.orderBy(orgs, ["org_handle"], ["asc"]) }
-=======
         payload: { organizations: _.orderBy(orgs, ["permissions"], ["desc"]) }
->>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
       });
     } else {
       dispatch({ type: actions.GET_PROFILE_DATA_END });
@@ -169,20 +157,13 @@ export const getUserProfileData =
   handle => async (firebase, firestore, dispatch) => {
     try {
       dispatch({ type: actions.GET_USER_DATA_START });
-<<<<<<< HEAD
-      const isUserExists = await checkUserHandleExists(handle)(firebase);
-=======
       const isUserExists = await checkUserHandleExists(handle)(firestore);
->>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
       if (isUserExists) {
         const docs = await firestore
           .collection("cl_user")
           .where("handle", "==", handle)
           .get();
         const doc = docs.docs[0].data();
-<<<<<<< HEAD
-        dispatch({ type: actions.GET_USER_DATA_SUCCESS, payload: doc });
-=======
         const currentUserId = firebase.auth().currentUser.uid;
         const followingStatus = await isUserFollower(
           currentUserId,
@@ -193,7 +174,6 @@ export const getUserProfileData =
           type: actions.GET_USER_DATA_SUCCESS,
           payload: { ...doc, isFollowing: followingStatus }
         });
->>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
       } else {
         dispatch({ type: actions.GET_USER_DATA_SUCCESS, payload: false });
       }
@@ -221,28 +201,6 @@ export const addUserFollower = async (
   dispatch
 ) => {
   try {
-<<<<<<< HEAD
-    if (followers && followers.includes(currentProfileData.handle)) {
-    } else if (followers) {
-      const arr = [...followers];
-      arr.push(currentProfileData.handle);
-      firestore.collection("cl_user").doc(profileData.uid).update({
-        followers: arr
-      });
-      var arr2 = [];
-      if (following) arr2 = [...following];
-
-      arr2.push(profileData.handle);
-      firestore.collection("cl_user").doc(currentProfileData.uid).update({
-        following: arr2
-      });
-    } else {
-      firestore
-        .collection("cl_user")
-        .doc(currentProfileData.uid)
-        .update({
-          following: [profileData.handle]
-=======
     const followStatus = await isUserFollower(
       currentProfileData.uid,
       profileData.uid,
@@ -255,16 +213,12 @@ export const addUserFollower = async (
         .set({
           followingId: profileData.uid,
           followerId: currentProfileData.uid
->>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
         });
 
       await firestore
         .collection("cl_user")
         .doc(profileData.uid)
         .update({
-<<<<<<< HEAD
-          followers: [currentProfileData.handle]
-=======
           followerCount: firestore.FieldValue
             ? firestore.FieldValue.increment(1)
             : 1
@@ -277,7 +231,6 @@ export const addUserFollower = async (
           followingCount: firestore.FieldValue
             ? firestore.FieldValue.increment(1)
             : 1
->>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
         });
     }
   } catch (e) {
@@ -292,21 +245,6 @@ export const removeUserFollower = async (
   dispatch
 ) => {
   try {
-<<<<<<< HEAD
-    var filteredFollowers = followers.filter(function (value, index, arr) {
-      return value !== currentProfileData.handle;
-    });
-    firestore.collection("cl_user").doc(profileData.uid).update({
-      followers: filteredFollowers
-    });
-    var currFollowing = following.filter(function (value, index, arr) {
-      return profileData.handle !== value;
-    });
-    firestore.collection("cl_user").doc(currentProfileData.uid).update({
-      following: currFollowing
-    });
-  } catch (e) {}
-=======
     const followStatus = await isUserFollower(
       currentProfileData.uid,
       profileData.uid,
@@ -339,7 +277,6 @@ export const removeUserFollower = async (
   } catch (e) {
     console.log(e);
   }
->>>>>>> b6555d85dc58e8f59e64cb6afe932538d9b24b00
 };
 
 const getAllOrgsOfCurrentUser = (uid) => async (firebase, firestore, dispatch) => {
